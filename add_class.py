@@ -77,7 +77,7 @@ class Record:
 
     def add_rec(self, addit_phone: Phone = None):
         add_to_dict = AddressBook({self.name: self.phones})
-        add_to_dict.add_record(addit_phone)
+        add_to_dict.add_record(addit_phone, self.birthday)
         return add_to_dict
 
     def change_rec(self, pre_phone: Phone, post_phone: Phone):
@@ -105,24 +105,31 @@ class Record:
 
 
 class AddressBook(UserDict):
-    def add_record(self, add_phone: Phone = None):
+    base_data = []
+
+    def add_record(self, add_phone: Phone = None, birthday_date: Birthday = None):
         if add_phone is None:
             self.data.update()
         else:
             [self.data[key].append(add_phone.phone) for key in self.data.keys()]
+        #for contact in self.base_data:
+            #if contact.get('name') == self.data:
+                #self.base_data.append(self.data)
+        print(self.data['Jeka'])
 
     def change_record(self, previous_phone: Phone, future_phone: Phone):
         for key, value in self.data.items():
             for num_index in range(len(value)):
                 if value[num_index] == previous_phone.phone:
                     value[num_index] = future_phone.phone
+        #self.base_data.append(self.data)
 
     def del_record(self, del_phone: Phone):
         for key, value in self.data.items():
             value.remove(del_phone.phone)
 
     def __iter__(self):
-        return GetAddressBook(self.data, 2)
+        return GetAddressBook(self.data, 3)
 
 
 class GetAddressBook:
@@ -145,17 +152,17 @@ if __name__ == '__main__':
 
     person_1 = Record(person_name)
 
-    print(str(person_1))
-
     print(person_1.add_rec(Phone('1122')))
     print(person_1.phones)
     print(person_1.add_rec())
+    '''
     print(person_1.add_rec(Phone('2222')))
     print(person_1.phones)
     print(person_1.change_rec(Phone('2598'), Phone('3300')))
     print(person_1.del_rec(Phone('2222')))
 
     person_2 = Record(Name('Dima'), Phone('067---8'), Birthday('22.01.2000'))
+    print(person_2.add_rec())
 
     print(str(person_2.phones))
     print(str(person_1.phones))
@@ -163,4 +170,6 @@ if __name__ == '__main__':
 
     person_3 = Record(Name('Dima'), Phone('067---8'), Birthday('28.06.2074'))
     print(person_3.days_to_birthday())
+    print(AddressBook.base_data)
+    '''
 

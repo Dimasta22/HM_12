@@ -1,4 +1,5 @@
 from handler import handler
+from parser import parser
 
 
 def main():
@@ -15,8 +16,9 @@ def main():
 
     while True:
         command = input('Введите название комманды и параметры: ')
-        if handler(command) is False:
-            print('До новых встреч!')
+        if parser(command) in ['EXIT', 'CLOSE', 'GOOD BYE']:
+
+            print('До новых встреч')
             break
         print(handler(command))
 
