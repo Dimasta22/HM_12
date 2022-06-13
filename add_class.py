@@ -1,6 +1,8 @@
 from collections import UserDict
 from datetime import datetime
 import calendar
+import pickle
+import re
 
 
 class Field:
@@ -77,7 +79,7 @@ class Record:
 
     def add_rec(self, addit_phone: Phone = None):
         add_to_dict = AddressBook({self.name: self.phones})
-        add_to_dict.add_record(addit_phone, self.birthday)
+        add_to_dict.add_record(addit_phone, self.birthday, self.name)
         return add_to_dict
 
     def change_rec(self, pre_phone: Phone, post_phone: Phone):
@@ -107,15 +109,17 @@ class Record:
 class AddressBook(UserDict):
     base_data = []
 
-    def add_record(self, add_phone: Phone = None, birthday_date: Birthday = None):
+    def add_record(self, add_phone: Phone = None, birthday_date: Birthday = None, key_name: Name = None):
         if add_phone is None:
             self.data.update()
         else:
             [self.data[key].append(add_phone.phone) for key in self.data.keys()]
-        #for contact in self.base_data:
-            #if contact.get('name') == self.data:
-                #self.base_data.append(self.data)
-        print(self.data['Jeka'])
+
+        for contact in self.base_data:
+            if contact.get('name') == key_name:
+                self.base_data.remove(contact)
+        self.base_data.append({'name': key_name, 'phone': self.data[key_name], 'birthday': birthday_date})
+        #print(key_name)
 
     def change_record(self, previous_phone: Phone, future_phone: Phone):
         for key, value in self.data.items():
@@ -127,6 +131,13 @@ class AddressBook(UserDict):
     def del_record(self, del_phone: Phone):
         for key, value in self.data.items():
             value.remove(del_phone.phone)
+
+    def save_in_file(self, file_name):
+        with open(file_name, "wb") as fh:
+            pickle.dump(self.base_data, fh)
+
+    def search_something(self):
+        print(self.base_data)
 
     def __iter__(self):
         return GetAddressBook(self.data, 3)
@@ -149,12 +160,29 @@ class GetAddressBook:
 if __name__ == '__main__':
     person_name = Name('Jeka')
     person_phone = Phone('259+++8')
-
-    person_1 = Record(person_name)
+    person_1 = Record(person_name, person_phone)
+    print(person_1)
 
     print(person_1.add_rec(Phone('1122')))
+    print(person_1.change_rec(Phone('2598'), Phone('3300')))
+    print(person_1.del_rec(Phone('3300')))
+
     print(person_1.phones)
     print(person_1.add_rec())
+
+    person_2 = Record(Name('Dima'), Phone('067---8'), Birthday('22.01.2000'))
+    print(person_2.add_rec())
+
+    person_3 = Record(Name('Misha'), Phone('+38045(8'), Birthday('28.06.2014'))
+    print(person_3.days_to_birthday())
+    print(person_3.add_rec())
+    print(person_3.add_rec(Phone('8956')))
+    #print(AddressBook.base_data)
+
+    print(AddressBook.base_data)
+    AddressBook(AddressBook.base_data[0]).save_in_file('data_base.bin')
+
+    #print(AddressBook.search_something())
     '''
     print(person_1.add_rec(Phone('2222')))
     print(person_1.phones)

@@ -1,5 +1,6 @@
 from handler import handler
 from parser import parser
+from add_class import AddressBook
 
 
 def main():
@@ -12,12 +13,18 @@ def main():
           ' Имя, старий телефон, новый телефон')
     print('* - не обязательно к заполнению')
     print('Параметр phone: Имя')
-    print('Параметр days before birthday: Имя')
+    print('Параметр days: Имя')
+    print('Параметр Date (Загружает предыдущие данные)')
+    print('Параметр Search: name (Ищет совпадения)')
 
     while True:
         command = input('Введите название комманды и параметры: ')
         if parser(command) in ['EXIT', 'CLOSE', 'GOOD BYE']:
-
+            file = 'data_base.bin'
+            data = handler(command)
+            for record in data:
+                AddressBook(record).save_in_file(file)
+            #AddressBook(data).save_in_file(file)
             print('До новых встреч')
             break
         print(handler(command))

@@ -1,9 +1,8 @@
 from parser import parser, change_parser
 from input_error import input_error
 from add_class import Record, Name, Phone, Birthday
-
-#data_base = [{'name': 'Dima', 'phone': ['064', '050'], 'birthday': '22.01.2000'},
-             #{'name': 'Jeka', 'phone': ['033'], 'birthday': '16.01.1985'}]
+import pickle
+import re
 
 
 @input_error
@@ -13,6 +12,12 @@ def handler(sentence: str, data_base=[]):
         if parser(sentence) == 'HELLO':
             return "How can I help you?"
 
+        elif parser(sentence) == 'DATA':
+            file = 'data_base.bin'
+            with open(file, "rb") as fh:
+                unpacked = pickle.load(fh)
+            data_base.extend(unpacked)
+
         elif parser(sentence) == 'SHOW ALL':
             output = ''
             for contact in data_base:
@@ -20,8 +25,7 @@ def handler(sentence: str, data_base=[]):
             return output[:-2]
 
         elif parser(sentence) in ['EXIT', 'CLOSE', 'GOOD BYE']:
-            # Тут будет запись файла
-            return False
+            return data_base
 
         elif parser(sentence) is None:
             return 'Введите команду из списка доступных команд!'
@@ -33,6 +37,21 @@ def handler(sentence: str, data_base=[]):
                     record = Record(Name(name), Phone(' '), Birthday(contact.get('birthday')))
                     return record.days_to_birthday()
             return 'ДР не задан или такого человека нет!!!'
+
+        elif parser(sentence) == 'SEARCH':
+            _, find, *args = sentence.split(' ')
+            output = []
+            pretty_output = ''
+            for contact in data_base:
+                func_name = re.search(fr'{find}', contact["name"])
+                for phone in contact["phone"]:
+                    func_phone = re.search(fr'{find}', phone)
+                    if func_phone is not None or func_name is not None:
+                        output.append(contact)
+                        break
+            for contact in output:
+                pretty_output += f'{contact["name"]}, {contact["phone"]}, {contact["birthday"]};\n'
+            return pretty_output[:-2]
 
         elif parser(sentence) == 'ADD':
             _, name, *args = sentence.split(' ')
@@ -74,7 +93,6 @@ def handler(sentence: str, data_base=[]):
             elif change_parser(sentence) == 'ADD':
                 _, _, name, new_number, *args = sentence.split(' ')
                 for contact in data_base:
-                    print(contact)
                     if contact.get('name') == name:
                         record = Record(Name(name))
                         for number in contact['phone']:
@@ -118,6 +136,7 @@ if __name__ == '__main__':
         command = input('Введите название комманды и параметры: ')
         print(handler(command))
         if parser(command) in ['EXIT', 'CLOSE', 'GOOD BYE']:
+            # Запись в файл
             print('До новых встреч')
             break
 

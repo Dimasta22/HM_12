@@ -9,6 +9,8 @@ ACTION_LIST = [
     'SHOW ALL',
     'SHOW DAYS',
     'DAYS',
+    'DATA',
+    'SEARCH',
     'GOOD BYE',
     'CLOSE',
     'EXIT'
